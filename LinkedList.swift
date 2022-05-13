@@ -15,7 +15,7 @@ extension Node: CustomStringConvertible {
         guard let next = next else {
             return "\(value)"
         }
-        return "\(value)->" + String(describing: next) + " "
+        return "\(value) -> " + String(describing: next) + " "
     }
 }
 
@@ -61,7 +61,7 @@ public struct LinkedList<Value> {
         var currentIndex = 0
         
         while currentNode != nil && currentIndex < index {
-            currentNode = currentNode!.next
+            currentNode = currentNode?.next
             currentIndex += 1
         }
         
@@ -79,6 +79,60 @@ public struct LinkedList<Value> {
         node.next = Node(value: value, next: node.next)
         return node.next!
     }          
+    
+    
+    //Remove values from the list
+    public mutating func pop() -> Value? {
+        defer {
+            head = head?.next
+            if isEmpty {
+                tail = nil
+            }
+        }
+        
+        return head?.value
+    }
+    
+    public mutating func removeLast() -> Value? {
+        guard let head = head else {
+            return nil
+        }
+        
+        guard head !== tail else {
+            return pop()
+        }
+        
+        var currentNode = head
+        var prev = head 
+        
+        while let next = currentNode.next {
+            prev = currentNode
+            currentNode = next
+        }
+        
+        tail = prev
+        prev.next = nil
+        
+        return currentNode.value
+    }
+    
+    public mutating func remove(after node: Node<Value>) -> Value? {
+        // var value = node.next?.value
+        // if node.next === tail {
+        //     tail = node
+        // }
+        // node.next = node.next?.next
+        // return value
+        
+        defer {
+            if node.next === tail {
+                tail = node
+            }
+            node.next = node.next?.next
+        }
+        
+        return node.next?.value
+    }
 }
 
 extension LinkedList: CustomStringConvertible {
@@ -104,4 +158,16 @@ for _ in 1...4 {
 }
 print("After inserting: \(list)")
 
-  
+print("Before popping list: \(list)")
+print(list.pop() ?? 0)
+print("After popping list: \(list)")
+
+print("Before remove last: \(list)")
+print(list.removeLast() ?? 0)
+print("After remove last: \(list)")
+
+print("Before remove after: \(list)")
+let index = 0
+let node = list.node(at: index)!
+print(list.remove(after: node) ?? 0)
+print("After remove after: \(list)")

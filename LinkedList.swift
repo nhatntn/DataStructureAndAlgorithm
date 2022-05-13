@@ -133,6 +133,7 @@ public struct LinkedList<Value> {
         
         return node.next?.value
     }
+
 }
 
 extension LinkedList: CustomStringConvertible {
@@ -171,3 +172,51 @@ let index = 0
 let node = list.node(at: index)!
 print(list.remove(after: node) ?? 0)
 print("After remove after: \(list)")
+
+
+//Custom collection indexes
+extension LinkedList: Collection {
+    public struct Index: Comparable {
+        public var node: Node<Value>?
+        
+        static public func ==(lhs: Index, rhs: Index) -> Bool  {
+            switch (lhs.node, rhs.node) {
+            case let (left?, right?):
+                return left.next === right.next
+            case (nil, nil):
+                return true
+            default:
+                return false
+            }
+        }
+        
+        static public func <(lhs: Index, rhs: Index) -> Bool {
+            guard lhs != rhs else {
+                return false
+            }
+            
+            //sequence(first:next:)
+            //Returns a sequence formed from first and repeated lazy applications of next.
+            //first: The first element to be returned from the sequence.
+            //next: A closure that accepts the previous sequence element and returns the next element.
+            let nodes = sequence(first: lhs.node) { $0?.next }
+            return nodes.contains { $0 === rhs.node }
+        }
+    }
+    
+    public var startIndex: Index {
+        return Index(node: head)
+    }
+    
+    public var endIndex: Index {
+        return Index(node: tail)
+    }
+    
+    public subscript(position: Index) -> Value {
+        return position.node!.value
+    }
+    
+    public func index(after i: Index) -> Index {
+        return Index(node: i.node?.next)
+    }
+}

@@ -1,1 +1,4 @@
 # DataStructureAndAlgorithm
+
+- Linked List
+- Stack
